@@ -1,5 +1,6 @@
 const route = require("express").Router();
 const axios = require("axios");
+require("dotenv").config();
 route.post("/signup", async (req, res) => {
     const { email, password, name, username } = req.body;
     await axios.post(
@@ -33,7 +34,7 @@ route.post('/login', async (req, res) => {
             "audience": "https://dev-ngu25l76.us.auth0.com/api/v2/",
             "scope": "openid profile email",
             "client_id": "ccafYc32bPi5cqOkXJwkqzSxmc6fDtKM",
-            "client_secret": "pubj2sL2qJAIBJrxPvouIUF7aCpJTf6D_PCroyiZgiJHB_JlmeHfJrBJ1bqeJXNi"
+            "client_secret": process.env.AUTH0_CLIENT_SECRET
         }
     ).then((response) => res.status(200).json(response.data)).catch((err) => res.status(err.response.status).send(err.response.data));
 });

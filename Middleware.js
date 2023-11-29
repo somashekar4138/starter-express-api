@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 const JwksRsa = require("jwks-rsa");
 const axios = require("axios");
-
+require("dotenv").config();
 const getUserInfoMiddleware = (req, res, next) => {
+  // console.log(req.authId);
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -12,7 +13,7 @@ const getUserInfoMiddleware = (req, res, next) => {
   const accessToken = authHeader.split(" ")[1];
 
   axios
-    .get("https://dev-ngu25l76.us.auth0.com/userinfo", {
+    .get(`https://dev-ngu25l76.us.auth0.com/api/v2/users/${req.authId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -20,11 +21,24 @@ const getUserInfoMiddleware = (req, res, next) => {
     .then((response) => {
       req.user = response.data; // Attach user info to the request object
       next(); // Continue to the next middleware or route handler
-    })
-    .catch((error) => {
+    }).catch((error) => {
       console.error("Error fetching user info:", error);
       return res.status(401).json({ message: "Unauthorized - Invalid token" });
     });
+  // axios
+  //   .get("https://dev-ngu25l76.us.auth0.com/userinfo", {
+  //     headers: {
+  //       Authorization: `Bearer ${accessToken}`,
+  //     },
+  //   })
+  //   .then((response) => {
+  //     req.user = response.data; // Attach user info to the request object
+  //     next(); // Continue to the next middleware or route handler
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error fetching user info:", error);
+  //     return res.status(401).json({ message: "Unauthorized - Invalid token" });
+  //   });
 };
 
 const getManagementApiToken = async (req, res, next) => {
@@ -32,9 +46,8 @@ const getManagementApiToken = async (req, res, next) => {
     const response = await axios.post(
       "https://dev-ngu25l76.us.auth0.com/oauth/token",
       {
-        client_id: "Vbx1oYVMt7vLcSuNXIhrarGLBYG9776g",
-        client_secret:
-          "HmOmspYKItTWIiPAsiYyxGGxaAv-sPkWYEn_Ff9nNVyzBuCOdyZmdOLzOcxRikEO",
+        client_id: "ccafYc32bPi5cqOkXJwkqzSxmc6fDtKM",
+        client_secret: process.env.AUTH0_CLIENT_SECRET,
         audience: "https://dev-ngu25l76.us.auth0.com/api/v2/",
         grant_type: "client_credentials",
       }

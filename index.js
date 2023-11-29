@@ -11,6 +11,7 @@ const propertyRoute = require("./routes/properties");
 const matchingRoute = require("./routes/matching");
 const requirementRoute = require("./routes/requirements");
 const authenticateRoute = require("./routes/authentication");
+const userRoute = require("./routes/user");
 
 // dotenv confi
 require("dotenv").config();
@@ -22,7 +23,7 @@ app.get("/callback", (req, res) => {
 app.get("/verify", verifyToken, (req, res) => {
   successResponse(res, { authId: req.authId }, "success");
 });
-app.get("/userDetails", getUserInfoMiddleware, (req, res) => {
+app.get("/userDetails", verifyToken, getUserInfoMiddleware, (req, res) => {
   successResponse(res, req.user, "success");
 });
 app.use("/auth", authRoute);
@@ -34,4 +35,5 @@ app.use("/property", propertyRoute);
 app.use("/requirement", requirementRoute);
 app.use("/matching", matchingRoute);
 app.use('/authenticate', getManagementApiToken, authenticateRoute)
+app.use('/user', userRoute)
 app.listen(8000, () => console.log("Server listening on port 8000!"));
